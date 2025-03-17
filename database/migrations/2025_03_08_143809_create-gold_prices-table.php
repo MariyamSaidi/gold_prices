@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('gold_prices', function (Blueprint $table) {
             $table->id();
+            $table->DECIMAL('prix_gram_24k');
+            $table->DECIMAL('prix_gram_22k');
+            $table->DECIMAL('prix_gram_21k');
             $table->DECIMAL('prix');
             $table->string('devise');
             $table->timestamp('date')->useCurrent();

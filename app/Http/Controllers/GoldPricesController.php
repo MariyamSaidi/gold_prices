@@ -16,7 +16,14 @@ class GoldPricesController extends Controller
     {
         
         $goldPrices = GoldPrices::all();
-        return view('goldPrice', compact('goldPrices'));
+        // formater pour qu'elles soient compatibles avec ApexCharts.
+        //  pour extraire les prix et les dates dans des tableaux séparés.
+        $dates = $goldPrices->pluck('date')->toArray();
+        $prix24k = $goldPrices->pluck('prix_gram_24k')->toArray();
+        $prix22k = $goldPrices->pluck('prix_gram_22k')->toArray();
+        $prix21k = $goldPrices->pluck('prix_gram_21k')->toArray();
+        $prix = $goldPrices->pluck('prix')->toArray();
+        return view('goldPrice', compact('goldPrices','dates','prix24k','prix22k','prix21k','prix'));
     }
     /**
      * Show the form for creating a new resource.
@@ -29,6 +36,7 @@ class GoldPricesController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+    
     public function store(Request $request)
     {
         $response = Http::withOptions(['verify'=>false,])->withHeaders([
@@ -39,15 +47,19 @@ class GoldPricesController extends Controller
             $data = $response->json();
             // Enregistrez les données dans la base de données
             GoldPrices::create([
+                'prix_gram_24k' => $data['price_gram_24k'],
+                'prix_gram_22k' => $data['price_gram_22k'],
+                'prix_gram_21k' => $data['price_gram_21k'],
                 'prix' => $data['price'],
-                'devise' => 'USD',
+                'devise' => $data['currency'],
                 'date' => now(),
             ]);
         
         return to_route('gold-prices.index');
         }
     }
-
+    
+    
 
     /**
      * Display the specified resource.
